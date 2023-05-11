@@ -1,5 +1,4 @@
 const PersonForm = (props) => {
-  console.log(props.valueName);
   return (
     <form onSubmit={props.onSubmit}>
       <div>
