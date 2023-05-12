@@ -4,12 +4,14 @@ import Filter from "./Components.js/Filter";
 import PrintArray from "./Components.js/PrintArray";
 import axios from "axios";
 import personService from "./directory/persons";
+import SuccessMessage from "./Components.js/SuccessNotification";
 
 const App = () => {
   const [person, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filterName, setNewFilter] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((response) => {
@@ -35,6 +37,10 @@ const App = () => {
 
     personService.create(personObject).then((response) => {
       setPersons(person.concat(response));
+      setSuccessMessage(`Added ${personObject.name}`);
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
       setNewName("");
       setNewNumber("");
     });
@@ -80,6 +86,8 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
+
+      <SuccessMessage message={successMessage} />
 
       <PrintArray array={namesToShow} toggleDeleteOf={toggleDeleteOf} />
     </div>
