@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import PersonForm from "./Components.js/PersonForm";
 import Filter from "./Components.js/Filter";
 import PrintArray from "./Components.js/PrintArray";
-import axios from "axios";
 import personService from "./directory/persons";
 import SuccessMessage from "./Components.js/SuccessNotification";
 
