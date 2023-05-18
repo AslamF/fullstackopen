@@ -61,9 +61,12 @@ app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   persons = persons.filter((person) => person.id !== id);
 
-  response.status(204).end;
+  response.status(204).end();
 });
-
+const generateId = () => {
+  const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0;
+  return maxId + 1;
+};
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
@@ -77,12 +80,12 @@ app.post("/api/persons", (request, response) => {
 
   if (currentPeople.includes(body.name)) {
     return response.status(400).json({
-      error: "need uniqure name",
+      error: "need unique name",
     });
   }
 
   const person = {
-    id: Math.random(),
+    id: generateId(),
     name: body.name,
     number: body.number,
   };
