@@ -45,7 +45,7 @@ const App = () => {
     });
   };
   const toggleDeleteOf = (id) => {
-    const url = `http://localhost:3001/persons/${id}`;
+    const url = `/api/persons/${id}`;
     const personToDelete = person.find((i) => i.id === id);
     const deletedPerson = { ...personToDelete, deleteValue: true };
 
