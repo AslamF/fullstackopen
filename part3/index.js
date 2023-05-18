@@ -4,7 +4,7 @@ const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
 
-app.use(express.static("./build"));
+app.use(express.static("build"));
 app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
@@ -57,6 +57,7 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 app.delete("/api/persons/:id", (request, response) => {
+  console.log(request);
   const id = Number(request.params.id);
   persons = persons.filter((person) => person.id !== id);
 
