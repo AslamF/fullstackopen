@@ -1,14 +1,34 @@
 const { request, response } = require("express");
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const PersonDB = require("./models/personDB");
 
 app.use(express.static("build"));
 app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 
+let password = "aslam1234";
+const url = `mongodb+srv://faslam7646:${password}@phonebookcluster.ivxkrlj.mongodb.net/phoneBook?retryWrites=true&w=majority`;
+mongoose.set("strictQuery", false);
+mongoose.connect(url);
+
+const personSchema = new mongoose.Schema({
+  name: String,
+  number: String,
+});
+personSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+const Person = mongoose.model("Person", personSchema);
 let persons = [
   {
     id: 1,
@@ -37,7 +57,9 @@ app.get("/", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((person) => {
+    response.json(person);
+  });
 });
 
 app.get("/api/info", (request, response) => {
@@ -84,18 +106,18 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  const person = {
-    id: generateId(),
+  const person = new PersonDB({
     name: body.name,
     number: body.number,
-  };
-
-  persons = persons.concat(person);
-
-  response.json(person);
+  });
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
+  //persons = persons.concat(person);
+  //response.json(savedNote);
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
