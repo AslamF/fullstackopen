@@ -20,14 +20,17 @@ app.get("/api/persons", (request, response) => {
   });
 });
 
-// get info on the amount of people are in the phonebook
-app.get("/api/info", (request, response) => {
-  response.send(
-    `<tag> Phonebook has info for ${PersonDB.length}</tag> people ${new Date()}`
-  );
+// get info on number of entries
+app.get("/info", (request, response, next) => {
+  PersonDB.countDocuments({})
+    .then((number) => {
+      let info = `<p>Phonebook has info for ${number} people</p>`;
+      info += new Date();
+      response.send(info);
+    })
+    .catch((error) => next(error));
 });
 
-//get an individual person from the database based on their id
 app.get("/api/persons/:id", (request, response, next) => {
   PersonDB.findById(request.params.id)
     .then((person) => {
@@ -41,7 +44,6 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-// handle error
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 
@@ -53,7 +55,7 @@ const errorHandler = (error, request, response, next) => {
 
   next(error);
 };
-// delete an item from database
+
 app.delete("/api/persons/:id", (request, response, next) => {
   PersonDB.findByIdAndRemove(request.params.id)
     .then((result) => {
@@ -62,23 +64,9 @@ app.delete("/api/persons/:id", (request, response, next) => {
     })
     .catch((error) => next(error));
 });
-// create a person/number and add it to the database
+
 app.post("/api/persons", (request, response, next) => {
   const body = request.body;
-
-  if (body.name === undefined || body.number === undefined) {
-    return response.status(400).json({
-      error: "missing content",
-    });
-  }
-
-  const currentPeople = PersonDB.map((person) => person.name);
-
-  if (currentPeople.includes(body.name)) {
-    return response.status(400).json({
-      error: "need unique name",
-    });
-  }
 
   const person = new PersonDB({
     name: body.name,
