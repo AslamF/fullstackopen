@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit"
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -16,6 +18,9 @@ const asObject = (anecdote) => {
     votes: 0
   }
 }
+
+const initialState = anecdotesAtStart.map(asObject)
+/*
 export const castVote = (id) => {
   return{
     type: 'VOTE',
@@ -39,7 +44,7 @@ export const createAnecdoteAction = (content) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const reducer = (state = initialState, action) => {
+const anecdoteReducer = (state = initialState, action) => {
   console.log('state now: ', state)
   console.log('action', action)
   if (action.type === "VOTE") {
@@ -62,5 +67,40 @@ const reducer = (state = initialState, action) => {
   }
   return state
 }
+*/
+const anecdoteSlice = createSlice({
+  name: "anecdote",
+  initialState: [],
+  reducers: {
+    createAnecdoteAction(state, action) {
+      const content = action.payload;
+      state.push({
+        content,
+        id:getId(),
+        votes: 0
+      })
+    },
+    castVote(state, action) {
+    const id = action.payload; // this gives us access to the id of the action that was sent
+    const voteToBeCast = state.find(n => n.id === id);
+    const voteCasted = {
+      ...voteToBeCast,
+      votes: voteToBeCast.votes + 1
+    }
 
-export default reducer
+    console.log(JSON.parse(JSON.stringify(state)))
+    
+    return state.map(anecdote => 
+      anecdote.id !== id ? anecdote : voteCasted
+      )
+    }
+  },
+  appendAnecdote(state, action) {
+    state.push(action.payload)
+  },
+  setAnecdotes(state, action) {
+    return action.payload
+  }
+})
+export const {createAnecdoteAction, castVote, appendAnecdote, setAnecdotes} = anecdoteSlice.actions
+export default anecdoteSlice.reducer
